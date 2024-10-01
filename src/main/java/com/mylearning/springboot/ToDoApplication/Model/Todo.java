@@ -1,5 +1,9 @@
 package com.mylearning.springboot.ToDoApplication.Model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,8 +12,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+@Entity(name = "todos")
 @Data
 public class Todo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotNull
     private String name;
@@ -27,6 +34,17 @@ public class Todo {
         this.description = description;
         this.targetDate = targetDate;
         this.status = status;
+    }
+
+    public Todo(String name, String description, LocalDate targetDate, String status) {
+        this.name = name;
+        this.description = description;
+        this.targetDate = targetDate;
+        this.status = status;
+    }
+
+    public Todo() {
+
     }
 
     @Override

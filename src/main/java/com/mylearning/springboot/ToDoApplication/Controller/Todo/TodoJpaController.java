@@ -1,6 +1,7 @@
 package com.mylearning.springboot.ToDoApplication.Controller.Todo;
 
 import com.mylearning.springboot.ToDoApplication.Model.Todo;
+import com.mylearning.springboot.ToDoApplication.Service.TodoJpaService;
 import com.mylearning.springboot.ToDoApplication.Service.TodoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +13,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @Controller
 @SessionAttributes("name")
-@RequestMapping("/WithOutJpa/")
-public class TodoController {
-
-    private TodoService todoService;
+public class TodoJpaController {
+    private TodoJpaService todoJpaService;
 
     @Autowired
-    public TodoController(TodoService todoService){
-        this.todoService=todoService;
+    public TodoJpaController(TodoJpaService todoJpaService){
+        this.todoJpaService=todoJpaService;
     }
 
     //todoAll.jsp yet to implement
@@ -38,7 +38,7 @@ public class TodoController {
     @RequestMapping("/todo-list")
     public String getTodoList(ModelMap modelMap){
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<Todo> todos=todoService.getTodos(userName);
+        List<Todo> todos=todoJpaService.getTodos(userName);
         modelMap.addAttribute("todos",todos); //checks for null in attribute name, attributes name cannot be null
 
 //        modelMap.addAttribute(null,todos);//Error
@@ -63,19 +63,19 @@ public class TodoController {
             return "addToDo";
         }
         String userName = (String)modelMap.get("name");
-        todoService.addTodos(userName,todo.getDescription(),todo.getTargetDate(),todo.getStatus());
+        todoJpaService.addTodos(userName,todo.getDescription(),todo.getTargetDate(),todo.getStatus());
         return "redirect:todo-list";
     }
 
     @RequestMapping(value = "/delete-todo",method = RequestMethod.GET)
     public String deleteTodo(@RequestParam int id){
-        todoService.deleteTodos(id);
+        todoJpaService.deleteTodos(id);
         return "redirect:todo-list";
     }
 
     @RequestMapping(value = "/update-todo",method = RequestMethod.GET)
     public String updateTodoPage(@RequestParam int id,ModelMap modelMap){
-        Todo todo = todoService.getTodo(id);
+        Todo todo = todoJpaService.getTodo(id);
         modelMap.put("todo",todo);
         return "addToDo";
     }
@@ -86,7 +86,7 @@ public class TodoController {
             bindingResult.getAllErrors().stream().forEach(System.out::println);
             return "addToDo";
         }
-        todoService.update(todo);
+        todoJpaService.update(todo);
         return "redirect:todo-list";
     }
 }

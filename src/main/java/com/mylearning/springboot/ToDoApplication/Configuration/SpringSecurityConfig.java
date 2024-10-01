@@ -4,6 +4,8 @@ package com.mylearning.springboot.ToDoApplication.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.jaas.memory.InMemoryConfiguration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -11,8 +13,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.function.Function;
+
+//import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SpringSecurityConfig {
@@ -48,5 +53,23 @@ public class SpringSecurityConfig {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        return authentication;
 //    }
+
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeHttpRequests(
+                auth -> auth.anyRequest().authenticated()
+        );
+
+//        httpSecurity.formLogin(withDefaults()); // added with import static org.springframework.security.config.Customizer.withDefaults;  --> this is Lecture code
+
+        httpSecurity.formLogin(Customizer.withDefaults());  //alternate for line 64 and simple
+
+        httpSecurity.csrf(csrf -> csrf.disable());
+
+        httpSecurity.headers(header -> header.frameOptions(frameOptions -> frameOptions.disable()));
+
+        return httpSecurity.build();
+    }
 
 }
